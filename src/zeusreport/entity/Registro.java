@@ -1,6 +1,8 @@
 package zeusreport.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.sporeon.baseutil.DataUtil;
 
@@ -11,49 +13,22 @@ import com.sporeon.baseutil.DataUtil;
 public class Registro {
 
 	/**
-	 * Data formatada.
-	 * @author Senio Caires
-	 */
-	private String dataFormatada;
-
-	/**
-	 * Horário do registro.
-	 * @author Senio Caires
-	 */
-	private String horas;
-
-	/**
 	 * Dono do registro de ponto.
 	 * @author Senio Caires
 	 */
 	private UsuarioZeus usuario;
 
 	/**
-	 * Retorna a data.
+	 * Data do registro.
 	 * @author Senio Caires
-	 * @return {@link Date}
 	 */
-	public Date getData() {
-		return DataUtil.stringParaDate(getDataFormatada());
-	}
+	private Date data;
 
 	/**
-	 * Retorna a data formatada do registro.
+	 * Horários registrados.
 	 * @author Senio Caires
-	 * @return {@link String}
 	 */
-	public final String getDataFormatada() {
-		return dataFormatada;
-	}
-
-	/**
-	 * Retorna o horário do registro de ponto.
-	 * @author Senio Caires
-	 * @return {@link String}
-	 */
-	public final String getHoras() {
-		return horas;
-	}
+	private List<String> horarios;
 
 	/**
 	 * Retorna o usuário.
@@ -71,5 +46,62 @@ public class Registro {
 	 */
 	public final void setUsuario(final UsuarioZeus usuarioParametro) {
 		this.usuario = usuarioParametro;
+	}
+
+	/**
+	 * Retorna a data.
+	 * @author Senio Caires
+	 * @return {@link Date}
+	 */
+	public final Date getData() {
+		return data;
+	}
+
+	/**
+	 * Altera a data.
+	 * @author Senio Caires
+	 * @param dataParametro - Data do registro
+	 */
+	public final void setData(final Date dataParametro) {
+		this.data = dataParametro;
+	}
+
+	/**
+	 * Retorna a lista de horários.
+	 * @author Senio Caires
+	 * @return {@link List}<{@link String}>
+	 */
+	public final List<String> getHorarios() {
+
+		if (horarios == null) {
+			horarios = new ArrayList<String>();
+		}
+
+		return horarios;
+	}
+
+	/**
+	 * Altera a lista de horários.
+	 * @author Senio Caires
+	 * @param horariosParametro - Horários
+	 */
+	public final void setHorarios(final List<String> horariosParametro) {
+		this.horarios = horariosParametro;
+	}
+
+	/**
+	 * Retorna a lista de horários.
+	 * @author Senio Caires
+	 * @return {@link List}<{@link Date}>
+	 */
+	public final List<Date> getHorariosComData() {
+
+		List<Date> resultado = new ArrayList<Date>();
+
+		for (String horario : getHorarios()) {
+			resultado.add(DataUtil.stringParaDate(DataUtil.dateParaString(getData()) + " " + horario + ":00", "dd/MM/yyyy HH:mm", "dd/MM/yyyy HH:mm"));
+		}
+
+		return resultado;
 	}
 }
