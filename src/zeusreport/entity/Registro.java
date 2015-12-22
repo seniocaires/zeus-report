@@ -1,5 +1,9 @@
 package zeusreport.entity;
 
+import java.util.Date;
+
+import com.sporeon.baseutil.DataUtil;
+
 /**
  * Entidade para representar os registros de ponto dos usuários do Zeus.
  * @author Senio Caires
@@ -23,6 +27,15 @@ public class Registro {
 	 * @author Senio Caires
 	 */
 	private UsuarioZeus usuario;
+
+	/**
+	 * Retorna a data.
+	 * @author Senio Caires
+	 * @return {@link Date}
+	 */
+	public Date getData() {
+		return DataUtil.stringParaDate(getDataFormatada());
+	}
 
 	/**
 	 * Retorna a data formatada do registro.
