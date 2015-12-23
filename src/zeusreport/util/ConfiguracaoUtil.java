@@ -64,6 +64,64 @@ public class ConfiguracaoUtil {
 	private static ConfiguracaoProxy configuracaoProxy;
 
 	/**
+	 * Url do relatório.
+	 * @author Senio Caires
+	 */
+	private static String urlRelatorio;
+
+	/**
+	 * Retorna a data inicial formatada.
+	 * @author Senio Caires
+	 * @return {@link String}
+	 */
+	public static final String getDataInicialFormatada() {
+		return getPrevistos().get(0).getDataFormatada();
+	}
+
+	/**
+	 * Retorna a data final formatada.
+	 * @author Senio Caires
+	 * @return {@link String}
+	 */
+	public static final String getDataFinalFormatada() {
+		return getPrevistos().get(getPrevistos().size() - 1).getDataFormatada();
+	}
+
+	/**
+	 * Retorna a data inicial formatada como parâmetro para o relatório.
+	 * @author Senio Caires
+	 * @return {@link String}
+	 */
+	public static final String getDataInicialFormatadaParametroRelatorio() {
+
+		StringBuilder retorno = new StringBuilder();
+
+		String[] dataPartes = getDataInicialFormatada().split("/");
+		retorno.append(dataPartes[2]);
+		retorno.append(dataPartes[1]);
+		retorno.append(dataPartes[0]);
+
+		return retorno.toString();
+	}
+
+	/**
+	 * Retorna a data final formatada como parâmetro para o relatório.
+	 * @author Senio Caires
+	 * @return {@link String}
+	 */
+	public static final String getDataFinalFormatadaParametroRelatorio() {
+
+		StringBuilder retorno = new StringBuilder();
+
+		String[] dataPartes = getDataFinalFormatada().split("/");
+		retorno.append(dataPartes[2]);
+		retorno.append(dataPartes[1]);
+		retorno.append(dataPartes[0]);
+
+		return retorno.toString();
+	}
+
+	/**
 	 * Retorna a lista com as datas e horas previstas.
 	 * @author Senio Caires
 	 * @return {@link List}<{@link Previsto}>
@@ -112,7 +170,7 @@ public class ConfiguracaoUtil {
 	 * @author Senio Caires
 	 * @return {@link ConfiguracaoProxy}
 	 */
-	public static ConfiguracaoProxy getConfiguracaoProxy() {
+	public static final ConfiguracaoProxy getConfiguracaoProxy() {
 
 		if (configuracaoProxy == null) {
 
@@ -127,5 +185,29 @@ public class ConfiguracaoUtil {
 		}
 
 		return configuracaoProxy;
+	}
+
+	/**
+	 * Retorna a url do relatório.
+	 * @author Senio Caires
+	 * @return {@link String}
+	 */
+	public static final String getUrlRelatorio() {
+		return urlRelatorio + "?" + getUsuarioZeus().getCodigo() + "," + getDataInicialFormatadaParametroRelatorio() + "," + getDataFinalFormatadaParametroRelatorio();
+	}
+
+	/**
+	 * Altera a url do relatório.
+	 * @author Senio Caires
+	 * @param urlRelatorioParametro - Url do relatório
+	 */
+	public static final void setUrlRelatorio(String urlRelatorioParametro) {
+
+		String[] urlPartes = urlRelatorioParametro.split("\\?");
+		String[] parametrosPartes = urlPartes[1].split(",");
+
+		urlRelatorio = urlPartes[0];
+
+		usuarioZeus.setCodigo(parametrosPartes[0]);
 	}
 }

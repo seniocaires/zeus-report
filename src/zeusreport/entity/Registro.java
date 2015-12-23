@@ -31,6 +31,17 @@ public class Registro {
 	private List<String> horarios;
 
 	/**
+	 * Construtor.
+	 * @author Senio Caires
+	 * @param usuarioParametro - Usuário do zeus
+	 * @param dataParametro - Data do registro
+	 */
+	public Registro(UsuarioZeus usuarioParametro, Date dataParametro) {
+		this.usuario = usuarioParametro;
+		this.data = dataParametro;
+	}
+
+	/**
 	 * Retorna o usuário.
 	 * @author Senio Caires
 	 * @return

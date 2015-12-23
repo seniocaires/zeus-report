@@ -13,7 +13,7 @@ public class UsuarioZeus {
 	 * Código do usuário.
 	 * @author Senio Caires
 	 */
-	private Integer codigo;
+	private String codigo;
 
 	/**
 	 * Nome do usuário.
@@ -42,9 +42,9 @@ public class UsuarioZeus {
 	/**
 	 * Retorna o código do usuário.
 	 * @author Senio Caires
-	 * @return {@link Integer}
+	 * @return {@link String}
 	 */
-	public final Integer getCodigo() {
+	public final String getCodigo() {
 		return codigo;
 	}
 
@@ -53,7 +53,7 @@ public class UsuarioZeus {
 	 * @author Senio Caires
 	 * @param codigoParametro - Código do usuário
 	 */
-	public final void setCodigo(final Integer codigoParametro) {
+	public final void setCodigo(final String codigoParametro) {
 		this.codigo = codigoParametro;
 	}
 
@@ -104,6 +104,11 @@ public class UsuarioZeus {
 	 * @return {@link String}
 	 */
 	public final String getLogin() {
+
+		if (login != null) {
+			login = login.toUpperCase();
+		}
+
 		return login;
 	}
 
