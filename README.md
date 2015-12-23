@@ -8,6 +8,6 @@ Saldo diário e acumulado no período. <br/>
 <b>configuracao-proxy.json</b> - Caso esteja em uma rede com proxy, utilize para configurar. <br/>
 <b>configuracao-usuario-zeus.json</b> - Configuração do usuário para acessar o Zeus. <br/>
 <br/>
-Executar /zeusreport/run/Run.java <br/>
+Executar src/zeusreport/run/Run.java <br/>
 <br/>
 Erros, envie o log com level TRACE para seniocaires@gmail.com
