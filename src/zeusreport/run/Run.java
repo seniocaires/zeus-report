@@ -239,12 +239,12 @@ public class Run {
 			primeiraData = format.parse(dataInicio);
 			segundaData = format.parse(dataTermino);
 
-			long diff = segundaData.getTime() - primeiraData.getTime();
+			long diferenca = segundaData.getTime() - primeiraData.getTime();
 
-			diferencaSegundos = diff / 1000 % 60;
-			diferencaoMinutos = diff / (60 * 1000) % 60;
-			diferencaHoras = diff / (60 * 60 * 1000) % 24;
-			diferencaDias = diff / (24 * 60 * 60 * 1000);
+			diferencaSegundos = diferenca / 1000 % 60;
+			diferencaoMinutos = diferenca / (60 * 1000) % 60;
+			diferencaHoras = diferenca / (60 * 60 * 1000) % 24;
+			diferencaDias = diferenca / (24 * 60 * 60 * 1000);
 
 		} catch (Exception e) {
 			e.printStackTrace();
