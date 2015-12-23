@@ -24,7 +24,7 @@ public class DownloadUtil {
 	 * Logger.
 	 * @author Senio Caires
 	 */
-	private static Logger logger = Logger.getLogger(DownloadUtil.class);
+	private static final Logger logger = Logger.getLogger(DownloadUtil.class);
 
 	/**
 	 * Faz o download de um arquivo de uma URL.
