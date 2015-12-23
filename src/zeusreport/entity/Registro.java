@@ -7,7 +7,7 @@ import java.util.List;
 import com.sporeon.baseutil.DataUtil;
 
 /**
- * Entidade para representar os registros de ponto dos usuários do Zeus.
+ * Entidade para representar os registros de ponto dos usuÃ¡rios do Zeus.
  * @author Senio Caires
  */
 public class Registro {
@@ -25,13 +25,13 @@ public class Registro {
 	private Date data;
 
 	/**
-	 * Horários registrados.
+	 * HorÃ¡rios registrados.
 	 * @author Senio Caires
 	 */
 	private List<String> horarios;
 
 	/**
-	 * Retorna o usuário.
+	 * Retorna o usuÃ¡rio.
 	 * @author Senio Caires
 	 * @return
 	 */
@@ -40,9 +40,9 @@ public class Registro {
 	}
 
 	/**
-	 * Altera o usuário
+	 * Altera o usuÃ¡rio
 	 * @author Senio Caires
-	 * @param usuarioParametro - Usuário
+	 * @param usuarioParametro - UsuÃ¡rio
 	 */
 	public final void setUsuario(final UsuarioZeus usuarioParametro) {
 		this.usuario = usuarioParametro;
@@ -67,7 +67,7 @@ public class Registro {
 	}
 
 	/**
-	 * Retorna a lista de horários.
+	 * Retorna a lista de horÃ¡rios.
 	 * @author Senio Caires
 	 * @return {@link List}<{@link String}>
 	 */
@@ -81,16 +81,16 @@ public class Registro {
 	}
 
 	/**
-	 * Altera a lista de horários.
+	 * Altera a lista de horÃ¡rios.
 	 * @author Senio Caires
-	 * @param horariosParametro - Horários
+	 * @param horariosParametro - HorÃ¡rios
 	 */
 	public final void setHorarios(final List<String> horariosParametro) {
 		this.horarios = horariosParametro;
 	}
 
 	/**
-	 * Retorna a lista de horários.
+	 * Retorna a lista de horÃ¡rios.
 	 * @author Senio Caires
 	 * @return {@link List}<{@link Date}>
 	 */

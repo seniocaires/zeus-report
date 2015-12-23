@@ -10,7 +10,7 @@ import java.net.URL;
 import org.apache.log4j.Logger;
 
 /**
- * Classe utilit·ria para fazer download de um arquivo de uma URL.
+ * Classe utilit√°ria para fazer download de um arquivo de uma URL.
  * @author Senio Caires
  */
 public class DownloadUtil {
@@ -30,8 +30,8 @@ public class DownloadUtil {
 	 * Faz o download de um arquivo de uma URL.
 	 * @author Senio Caires
 	 * @param urlArquivo - URL do arquivo
-	 * @param diretorioSalvarDownload - DiretÛrio para salvar o download
-	 * @param nomeArquivo - Nome do arquivo para gravaÁ„o
+	 * @param diretorioSalvarDownload - Diret√≥rio para salvar o download
+	 * @param nomeArquivo - Nome do arquivo para grava√ß√£o
 	 * @throws IOException -
 	 */
 	public static void downloadArquivo(String urlArquivo, String diretorioSalvarDownload, String nomeArquivo) throws IOException {
@@ -58,7 +58,7 @@ public class DownloadUtil {
 			inputStream.close();
 
 		} else {
-			logger.error("N„o foi possÌvel fazer o download do arquivo. Servidor retornou o cÛdigo HTTP: " + codigoResposta);
+			logger.error("N√£o foi poss√≠vel fazer o download do arquivo. Servidor retornou o c√≥digo HTTP: " + codigoResposta);
 		}
 
 		httpUrlConnection.disconnect();

@@ -1,7 +1,7 @@
 package zeusreport.entity;
 
 /**
- * Entidade para representar as configuraÁıes de proxy.
+ * Entidade para representar as configura√ß√µes de proxy.
  * @author Senio Caires
  */
 public class ConfiguracaoProxy {
@@ -25,19 +25,19 @@ public class ConfiguracaoProxy {
 	private String porta;
 
 	/**
-	 * Login do usu·rio do proxy.
+	 * Login do usu√°rio do proxy.
 	 * @author Senio Caires
 	 */
 	private String login;
 
 	/**
-	 * Senha do usu·rio do proxy.
+	 * Senha do usu√°rio do proxy.
 	 * @author Senio Caires
 	 */
 	private String senha;
 
 	/**
-	 * Retorna a definiÁ„o se utilizar· uma conex„o com proxy.
+	 * Retorna a defini√ß√£o se utilizar√° uma conex√£o com proxy.
 	 * @author Senio Caires
 	 * @return {@link Boolean}
 	 */

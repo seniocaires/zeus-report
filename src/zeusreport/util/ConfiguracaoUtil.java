@@ -1,5 +1,5 @@
 package zeusreport.util;
 
-public class Util {
+public class ConfiguracaoUtil {
 
 }

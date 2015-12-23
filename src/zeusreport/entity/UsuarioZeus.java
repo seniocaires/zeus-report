@@ -4,43 +4,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Entidade para representar os usuários do Zeus.
+ * Entidade para representar os usuÃ¡rios do Zeus.
  * @author Senio Caires
  */
 public class UsuarioZeus {
 
 	/**
-	 * Código do usuário.
+	 * CÃ³digo do usuÃ¡rio.
 	 * @author Senio Caires
 	 */
 	private Integer codigo;
 
 	/**
-	 * Nome do usuário.
+	 * Nome do usuÃ¡rio.
 	 * @author Senio Caires
 	 */
 	private String nome;
 
 	/**
-	 * Login do usuário.
+	 * Login do usuÃ¡rio.
 	 * @author Senio Caires
 	 */
 	private String login;
 
 	/**
-	 * Senha do usuário.
+	 * Senha do usuÃ¡rio.
 	 * @author Senio Caires
 	 */
 	private String senha;
 
 	/**
-	 * Lista de registros de ponto do usuário.
+	 * Lista de registros de ponto do usuÃ¡rio.
 	 * @author Senio Caires
 	 */
 	private List<Registro> registros;
 
 	/**
-	 * Retorna o código do usuário.
+	 * Retorna o cÃ³digo do usuÃ¡rio.
 	 * @author Senio Caires
 	 * @return {@link Integer}
 	 */
@@ -49,16 +49,16 @@ public class UsuarioZeus {
 	}
 
 	/**
-	 * Altera o código do usuário.
+	 * Altera o cÃ³digo do usuÃ¡rio.
 	 * @author Senio Caires
-	 * @param codigoParametro - Código do usuário
+	 * @param codigoParametro - CÃ³digo do usuÃ¡rio
 	 */
 	public final void setCodigo(final Integer codigoParametro) {
 		this.codigo = codigoParametro;
 	}
 
 	/**
-	 * Retorna o nome do usuário.
+	 * Retorna o nome do usuÃ¡rio.
 	 * @author Senio Caires
 	 * @return {@link String}
 	 */
@@ -67,9 +67,9 @@ public class UsuarioZeus {
 	}
 
 	/**
-	 * Altera o nome do usuário.
+	 * Altera o nome do usuÃ¡rio.
 	 * @author Senio Caires
-	 * @param nomeParametro - Nome do usuário
+	 * @param nomeParametro - Nome do usuÃ¡rio
 	 */
 	public final void setNome(final String nomeParametro) {
 		this.nome = nomeParametro;
@@ -99,7 +99,7 @@ public class UsuarioZeus {
 	}
 
 	/**
-	 * Retorna o login do usuário.
+	 * Retorna o login do usuÃ¡rio.
 	 * @author Senio Caires
 	 * @return {@link String}
 	 */
@@ -108,7 +108,7 @@ public class UsuarioZeus {
 	}
 
 	/**
-	 * Retorna a senha do usuário.
+	 * Retorna a senha do usuÃ¡rio.
 	 * @author Senio Caires
 	 * @return {@link String}
 	 */
