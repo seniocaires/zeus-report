@@ -9,5 +9,4 @@ Saldo diário e acumulado no período. <br/>
 <b>configuracao-usuario-zeus.json</b> - Configuração do usuário para acessar o Zeus. <br/>
 <br/>
 Executar src/zeusreport/run/Run.java <br/>
-<br/>
-Erros, envie o log com level TRACE para seniocaires@gmail.com
+
