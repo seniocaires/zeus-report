@@ -3,6 +3,7 @@ package zeusreport.util;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -10,6 +11,7 @@ import org.apache.log4j.Logger;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import com.sporeon.baseutil.DataUtil;
 
 import zeusreport.entity.ConfiguracaoProxy;
 import zeusreport.entity.Previsto;
@@ -85,6 +87,24 @@ public class ConfiguracaoUtil {
 	 */
 	public static final String getDataFinalFormatada() {
 		return getPrevistos().get(getPrevistos().size() - 1).getDataFormatada();
+	}
+
+	/**
+	 * Retorna a data inicial.
+	 * @author Senio Caires
+	 * @return {@link Date}
+	 */
+	public static final Date getDataInicial() {
+		return DataUtil.stringParaDate(getDataInicialFormatada());
+	}
+
+	/**
+	 * Retorna a data final.
+	 * @author Senio Caires
+	 * @return {@link Date}
+	 */
+	public static final Date getDataFinal() {
+		return DataUtil.stringParaDate(getDataFinalFormatada());
 	}
 
 	/**
