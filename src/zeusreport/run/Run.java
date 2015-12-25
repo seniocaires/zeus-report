@@ -26,7 +26,6 @@ import com.sporeon.baseutil.ManipulacaoUtil;
 
 import zeusreport.entity.Previsto;
 import zeusreport.entity.Registro;
-import zeusreport.entity.UsuarioZeus;
 import zeusreport.util.ConfiguracaoUtil;
 import zeusreport.util.DownloadUtil;
 
@@ -60,68 +59,23 @@ public class Run {
 				DownloadUtil.downloadArquivo(ConfiguracaoUtil.getUrlRelatorio(), getPath(), "report.pdf");
 
 				PdfReader reader = new PdfReader(getPath() + "/report.pdf");
-				String page = PdfTextExtractor.getTextFromPage(reader, 1);
-				Date dataInicial = DataUtil.stringParaDate(ConfiguracaoUtil.getDataInicialFormatada());
+				String conteudoRelatorioZeus = PdfTextExtractor.getTextFromPage(reader, 1);
 
 				try {
 
-					String nome = (page.split("Período: " + ConfiguracaoUtil.getDataInicialFormatada() + " " + ConfiguracaoUtil.getDataFinalFormatada())[0]).split("Relatório de horário")[1].trim();
+					String nome = (conteudoRelatorioZeus.split("Período: " + ConfiguracaoUtil.getDataInicialFormatada() + " " + ConfiguracaoUtil.getDataFinalFormatada())[0]).split("Relatório de horário")[1].trim();
 
 					if (nome != null && !nome.trim().equals("")) {
 
-						UsuarioZeus usuarioZeus = ConfiguracaoUtil.getUsuarioZeus();
-						usuarioZeus.setNome(nome);
+						preencherDadosUsuarioZeus(conteudoRelatorioZeus, nome);
 
-						String[] registrosNaoTratados = page.split("Entrada Saída Entrada Saída Entrada Saída")[1].split("TOTAIS")[0].split("\n");
-						Date dataIndice = dataInicial;
-
-						for (String registroNaoTratado : registrosNaoTratados) {
-
-							if (!registroNaoTratado.contains(DataUtil.dateParaString(dataIndice))) {
-								continue;
-							} else {
-
-								Registro registro = new Registro(usuarioZeus, dataIndice);
-
-								String[] horariosNaoTratados = registroNaoTratado.split(DataUtil.dateParaString(dataIndice))[1].trim().split("   ")[0].trim().split(" ");
-
-								for (String horario : horariosNaoTratados) {
-									if (horario != null && !horario.trim().equals("")) {
-										registro.getHorarios().add(horario.trim());
-									}
-								}
-
-								usuarioZeus.getRegistros().add(registro);
-								dataIndice = DataUtil.adicionarDias(dataIndice, 1);
-							}
-						}
-
-						for (int indiceTraco = 1; indiceTraco <= 200 ; indiceTraco++) {
-							System.out.print("-");
-						}
-
-						System.out.println("");
-
-						System.out.println(usuarioZeus.getNome());
-
-						for (int indiceTraco = 1; indiceTraco <= 200 ; indiceTraco++) {
-							System.out.print("-");
-						}
-
-						System.out.println("");
-						System.out.println("Data\t\tHorario1\tHorario2\tHorario3\tHorario4\tHorario5\tHorario6\tTotal.Dia\tPrevisto\tSaldo.Dia\tSaldo.Acumulado");
-
-						for (int indiceTraco = 1; indiceTraco <= 200 ; indiceTraco++) {
-							System.out.print("-");
-						}
-
-						System.out.println("");
+						imprimirCabecalho();
 
 						List<String> totaisDias = new ArrayList<String>();
 						List<String> saldosDias = new ArrayList<String>();
 						String saldoAcumulado = "000:00";
 
-						for (Registro registroIndice : usuarioZeus.getRegistros()) {
+						for (Registro registroIndice : ConfiguracaoUtil.getUsuarioZeus().getRegistros()) {
 
 							System.out.print(DataUtil.dateParaString(registroIndice.getData()) + "\t");
 
@@ -213,6 +167,71 @@ public class Run {
 		} else {
 			logger.error("Erro ao acessar Zeus.");
 			System.exit(0);
+		}
+	}
+
+	/**
+	 * @author Senio Caires
+	 * @param conteudoRelatorioZeus
+	 * @param nomeUsuarioZeus
+	 */
+	private static final void preencherDadosUsuarioZeus(String conteudoRelatorioZeus, String nomeUsuarioZeus) {
+
+		ConfiguracaoUtil.getUsuarioZeus().setNome(nomeUsuarioZeus);
+
+		String[] registrosNaoTratados = conteudoRelatorioZeus.split("Entrada Saída Entrada Saída Entrada Saída")[1].split("TOTAIS")[0].split("\n");
+		Date dataIndice = ConfiguracaoUtil.getDataInicial();
+
+		for (String registroNaoTratado : registrosNaoTratados) {
+
+			if (!registroNaoTratado.contains(DataUtil.dateParaString(dataIndice))) {
+				continue;
+			} else {
+
+				Registro registro = new Registro(ConfiguracaoUtil.getUsuarioZeus(), dataIndice);
+
+				String[] horariosNaoTratados = registroNaoTratado.split(DataUtil.dateParaString(dataIndice))[1].trim().split("   ")[0].trim().split(" ");
+
+				for (String horario : horariosNaoTratados) {
+					if (horario != null && !horario.trim().equals("")) {
+						registro.getHorarios().add(horario.trim());
+					}
+				}
+
+				ConfiguracaoUtil.getUsuarioZeus().getRegistros().add(registro);
+				dataIndice = DataUtil.adicionarDias(dataIndice, 1);
+			}
+		}
+	}
+
+	/**
+	 * @author Senio Caires
+	 */
+	private static final void imprimirCabecalho() {
+
+		imprimirSeparador();
+
+		System.out.println("");
+
+		System.out.println(ConfiguracaoUtil.getUsuarioZeus().getNome());
+
+		imprimirSeparador();
+
+		System.out.println("");
+		System.out.println("Data\t\tHorario1\tHorario2\tHorario3\tHorario4\tHorario5\tHorario6\tTotal.Dia\tPrevisto\tSaldo.Dia\tSaldo.Acumulado");
+
+		imprimirSeparador();
+
+		System.out.println("");
+	}
+
+	/**
+	 * @author Senio Caires
+	 */
+	private static final void imprimirSeparador() {
+
+		for (int indiceTraco = 1; indiceTraco <= 200 ; indiceTraco++) {
+			System.out.print("-");
 		}
 	}
 
