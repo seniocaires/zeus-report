@@ -27,6 +27,7 @@ import com.sporeon.baseutil.ManipulacaoUtil;
 
 import zeusreport.entity.Previsto;
 import zeusreport.entity.Registro;
+import zeusreport.exception.ProjetoException;
 import zeusreport.util.ConfiguracaoUtil;
 import zeusreport.util.DownloadUtil;
 
@@ -49,125 +50,121 @@ public class Run {
 	 */
 	public static void main(String[] args) {
 
-		if (ConfiguracaoUtil.getConfiguracaoProxy().getAtiva()) {
-			ativarConexaoProxy();
+		try {
+			acessarZeus();
+		} catch (ProjetoException excecao) {
+			logger.error(excecao.getMessage());
+			System.exit(0);
 		}
 
-		if (acessarZeus()) {
+		try {
+
+			DownloadUtil.downloadArquivo(ConfiguracaoUtil.getUrlRelatorio(), getPath(), "report.pdf");
+
+			PdfReader reader = new PdfReader(getPath() + "/report.pdf");
+			String conteudoRelatorioZeus = PdfTextExtractor.getTextFromPage(reader, 1);
 
 			try {
 
-				DownloadUtil.downloadArquivo(ConfiguracaoUtil.getUrlRelatorio(), getPath(), "report.pdf");
+				String nome = (conteudoRelatorioZeus.split("Período: " + ConfiguracaoUtil.getDataInicialFormatada() + " " + ConfiguracaoUtil.getDataFinalFormatada())[0]).split("Relatório de horário")[1].trim();
 
-				PdfReader reader = new PdfReader(getPath() + "/report.pdf");
-				String conteudoRelatorioZeus = PdfTextExtractor.getTextFromPage(reader, 1);
+				if (nome != null && !nome.trim().equals("")) {
 
-				try {
+					preencherDadosUsuarioZeus(conteudoRelatorioZeus, nome);
 
-					String nome = (conteudoRelatorioZeus.split("Período: " + ConfiguracaoUtil.getDataInicialFormatada() + " " + ConfiguracaoUtil.getDataFinalFormatada())[0]).split("Relatório de horário")[1].trim();
+					imprimirCabecalho();
 
-					if (nome != null && !nome.trim().equals("")) {
+					List<String> totaisDias = new ArrayList<String>();
+					List<String> saldosDias = new ArrayList<String>();
+					String saldoAcumulado = "000:00";
 
-						preencherDadosUsuarioZeus(conteudoRelatorioZeus, nome);
+					for (Registro registroIndice : ConfiguracaoUtil.getUsuarioZeus().getRegistros()) {
 
-						imprimirCabecalho();
+						System.out.print(DataUtil.dateParaString(registroIndice.getData()) + "\t");
 
-						List<String> totaisDias = new ArrayList<String>();
-						List<String> saldosDias = new ArrayList<String>();
-						String saldoAcumulado = "000:00";
+						boolean modulo = false;
+						Date horarioAnteriorComData = new Date();
+						String totalDia = "";
+						String diferencaHorarios = "";
+						for (Date horarioComDataIndice : registroIndice.getHorariosComData()) {
+							System.out.print(DataUtil.dateParaString(horarioComDataIndice, "HH:mm") + "\t\t");
 
-						for (Registro registroIndice : ConfiguracaoUtil.getUsuarioZeus().getRegistros()) {
+							if (modulo) {
 
-							System.out.print(DataUtil.dateParaString(registroIndice.getData()) + "\t");
+								List<String> horariosComDataParaSoma = new ArrayList<String>();
+								horariosComDataParaSoma.add(DataUtil.dateParaString(horarioAnteriorComData, "HH:mm:ss"));
+								horariosComDataParaSoma.add(DataUtil.dateParaString(horarioComDataIndice, "HH:mm:ss"));
+								diferencaHorarios = diferencaHorarios(DataUtil.dateParaString(horarioAnteriorComData, "MM/dd/yyyy HH:mm:ss"), DataUtil.dateParaString(horarioComDataIndice, "MM/dd/yyyy HH:mm:ss"));
 
-							boolean modulo = false;
-							Date horarioAnteriorComData = new Date();
-							String totalDia = "";
-							String diferencaHorarios = "";
-							for (Date horarioComDataIndice : registroIndice.getHorariosComData()) {
-								System.out.print(DataUtil.dateParaString(horarioComDataIndice, "HH:mm") + "\t\t");
-
-								if (modulo) {
-
-									List<String> horariosComDataParaSoma = new ArrayList<String>();
-									horariosComDataParaSoma.add(DataUtil.dateParaString(horarioAnteriorComData, "HH:mm:ss"));
-									horariosComDataParaSoma.add(DataUtil.dateParaString(horarioComDataIndice, "HH:mm:ss"));
-									diferencaHorarios = diferencaHorarios(DataUtil.dateParaString(horarioAnteriorComData, "MM/dd/yyyy HH:mm:ss"), DataUtil.dateParaString(horarioComDataIndice, "MM/dd/yyyy HH:mm:ss"));
-
-									if (!totalDia.equals("")) {
-										totalDia = somaHorarios(totalDia, diferencaHorarios, 2);
-									} else {
-										totalDia = diferencaHorarios;
-									}
+								if (!totalDia.equals("")) {
+									totalDia = somaHorarios(totalDia, diferencaHorarios, 2);
+								} else {
+									totalDia = diferencaHorarios;
 								}
-
-								modulo = !modulo;
-								horarioAnteriorComData = horarioComDataIndice;
 							}
 
-							int quantidadeTabulacao = 0;
+							modulo = !modulo;
+							horarioAnteriorComData = horarioComDataIndice;
+						}
 
-							if (registroIndice.getHorarios().size() > 0) {
-								quantidadeTabulacao = 6 - registroIndice.getHorarios().size() - (registroIndice.getHorarios().size() % 2);
-							} else {
-								quantidadeTabulacao = 6;
-							}
+						int quantidadeTabulacao = 0;
 
-							for (int indiceTabulacao = 0 ; indiceTabulacao < quantidadeTabulacao ; indiceTabulacao++) {
-								System.out.print("\t\t");
-							}
+						if (registroIndice.getHorarios().size() > 0) {
+							quantidadeTabulacao = 6 - registroIndice.getHorarios().size() - (registroIndice.getHorarios().size() % 2);
+						} else {
+							quantidadeTabulacao = 6;
+						}
 
-							for (int indiceTabulacao = 0 ; indiceTabulacao < (registroIndice.getHorarios().size() % 2) ; indiceTabulacao++) {
-								System.out.print("\t\t");
-							}
+						for (int indiceTabulacao = 0 ; indiceTabulacao < quantidadeTabulacao ; indiceTabulacao++) {
+							System.out.print("\t\t");
+						}
 
-							if (!totalDia.equals("")) {
-								totaisDias.add(totalDia);
-								System.out.print(totalDia + "\t");
-							} else {
-								System.out.print("\t");
-							}
+						for (int indiceTabulacao = 0 ; indiceTabulacao < (registroIndice.getHorarios().size() % 2) ; indiceTabulacao++) {
+							System.out.print("\t\t");
+						}
 
+						if (!totalDia.equals("")) {
+							totaisDias.add(totalDia);
+							System.out.print(totalDia + "\t");
+						} else {
 							System.out.print("\t");
-							String horasDataPrevista = getHorasDataPrevista(DataUtil.dateParaString(registroIndice.getData()), 2);
-							System.out.print(horasDataPrevista);
-
-							System.out.print("\t\t");
-							String saldoDia = saldoDia((totalDia.equals("") ? "00:00" : totalDia), (horasDataPrevista.equals("") ? "00:00" : horasDataPrevista), 2);
-							System.out.print(saldoDia);
-
-							if (!saldoDia.equals("")) {
-								saldosDias.add(saldoDia);
-							}
-
-							System.out.print("\t\t");
-							saldoAcumulado = acumulaSaldoDia(saldoAcumulado, saldoDia);
-							System.out.print(saldoAcumulado);
-
-							System.out.println("");
 						}
 
-						String somaTotalDia = "00:00";
+						System.out.print("\t");
+						String horasDataPrevista = getHorasDataPrevista(DataUtil.dateParaString(registroIndice.getData()), 2);
+						System.out.print(horasDataPrevista);
 
-						for(String totalDiaIndice : totaisDias) {
-							somaTotalDia = somaHorarios(ManipulacaoUtil.adicionarChar('0', 6, somaTotalDia, true), ManipulacaoUtil.adicionarChar('0', 6, totalDiaIndice, true), 3);
+						System.out.print("\t\t");
+						String saldoDia = saldoDia((totalDia.equals("") ? "00:00" : totalDia), (horasDataPrevista.equals("") ? "00:00" : horasDataPrevista), 2);
+						System.out.print(saldoDia);
+
+						if (!saldoDia.equals("")) {
+							saldosDias.add(saldoDia);
 						}
 
-						System.out.println("\nTOTAL PREVISTO\t" + getTotalHorasPrevistas());
-						System.out.println("TOTAL REALIZADO\t" + somaTotalDia);
+						System.out.print("\t\t");
+						saldoAcumulado = acumulaSaldoDia(saldoAcumulado, saldoDia);
+						System.out.print(saldoAcumulado);
+
+						System.out.println("");
 					}
 
-				} catch (Exception e) {
-					e.printStackTrace();
+					String somaTotalDia = "00:00";
+
+					for(String totalDiaIndice : totaisDias) {
+						somaTotalDia = somaHorarios(ManipulacaoUtil.adicionarChar('0', 6, somaTotalDia, true), ManipulacaoUtil.adicionarChar('0', 6, totalDiaIndice, true), 3);
+					}
+
+					System.out.println("\nTOTAL PREVISTO\t" + getTotalHorasPrevistas());
+					System.out.println("TOTAL REALIZADO\t" + somaTotalDia);
 				}
 
-			} catch (IOException e) {
-				logger.error("Erro ao acessar relatório.");
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 
-		} else {
-			logger.error("Erro ao acessar Zeus.");
-			System.exit(0);
+		} catch (IOException e) {
+			logger.error("Erro ao acessar relatório.");
 		}
 	}
 
@@ -565,62 +562,133 @@ public class Run {
 	/**
 	 * Método para acessar o Zeus.
 	 * @author Senio Caires
-	 * @return {@link Boolean}
+	 * @throws ProjetoException
 	 */
-	private static final Boolean acessarZeus() {
+	private static final void acessarZeus() throws ProjetoException {
 
-		Boolean acessoSucesso = Boolean.FALSE;
+		WebClient webClient = criarWebClient();
+
+		efetuarLoginZeus(webClient);
+
+		acessarRelatorioZeus(webClient);
+
+		webClient.close();
+	}
+
+	/**
+	 * Método para acessar o relatório do Zeus e configurar os parâmetros do relatório.
+	 * @author Senio Caires
+	 * @param webClient
+	 * @throws ProjetoException
+	 */
+	private static void acessarRelatorioZeus(WebClient webClient) throws ProjetoException {
+
+		HtmlPage paginaRegistroPonto;
+		HtmlSubmitInput botaoImprimir;
+		UnexpectedPage responsePaginaRelatorio;
+
+		try {
+			paginaRegistroPonto = webClient.getPage("http://sistemas.pdcase.com/zeusprod21/HRegistroPonto2.aspx");
+		} catch (FailingHttpStatusCodeException excecao) {
+			throw new ProjetoException("FailingHttpStatusCodeException. Erro ao acessar página de registro de ponto do Zeus. " + excecao.getMessage());
+		} catch (MalformedURLException excecao) {
+			throw new ProjetoException("MalformedURLException. Erro ao acessar página de registro de ponto do Zeus. " + excecao.getMessage());
+		} catch (IOException excecao) {
+			throw new ProjetoException("IOException. Erro ao acessar página de registro de ponto do Zeus. " + excecao.getMessage());
+		}
+
+		botaoImprimir = (HtmlSubmitInput) paginaRegistroPonto.getElementByName("BUTTON2");
+
+		try {
+
+			responsePaginaRelatorio = botaoImprimir.click();
+			ConfiguracaoUtil.setUrlRelatorio(responsePaginaRelatorio.getWebResponse().getWebRequest().getUrl().toString());
+
+		} catch (IOException excecao) {
+			throw new ProjetoException("IOException. Erro ao obter resposta após acessar relatório do Zeus. " + excecao.getMessage());
+		}
+	}
+
+	/**
+	 * Método cria e retorna um WebClient com proxy configurado (caso necessário).
+	 * @author Senio Caires
+	 * @return {@link WebClient}
+	 */
+	private static WebClient criarWebClient() {
+
 		WebClient webClient;
+		DefaultCredentialsProvider credentialsProvider;
 
 		if (ConfiguracaoUtil.getConfiguracaoProxy().getAtiva()) {
 
+			ativarConexaoProxy();
+
 			webClient = new WebClient(BrowserVersion.CHROME, ConfiguracaoUtil.getConfiguracaoProxy().getHost(), Integer.valueOf(ConfiguracaoUtil.getConfiguracaoProxy().getPorta()));
 
-			final DefaultCredentialsProvider credentialsProvider = (DefaultCredentialsProvider) webClient.getCredentialsProvider();
+			credentialsProvider = (DefaultCredentialsProvider) webClient.getCredentialsProvider();
 			credentialsProvider.addCredentials(ConfiguracaoUtil.getConfiguracaoProxy().getLogin(), ConfiguracaoUtil.getConfiguracaoProxy().getSenha());
 
 		} else {
 			webClient = new WebClient(BrowserVersion.CHROME);
 		}
 
+		return webClient;
+	}
+
+	/**
+	 * Método para efetuar o login no Zeus.
+	 * @author Senio Caires
+	 * @param webClient
+	 * @throws ProjetoException
+	 */
+	private static void efetuarLoginZeus(WebClient webClient) throws ProjetoException {
+
+		HtmlPage paginaLogin = null;
+		HtmlPage responsePaginaLogin = null;
+		HtmlTextInput campoLogin;
+		HtmlPasswordInput campoSenha;
+		HtmlSubmitInput botaoConfirmar; 
+
 		try {
-
-			final HtmlPage paginaLogin = webClient.getPage("http://sistemas.pdcase.com/zeusprod21/hacessarsistema.aspx");
-
-			final HtmlTextInput campoLogin = (HtmlTextInput) paginaLogin.getElementById("_PESLOGIN");
-			final HtmlPasswordInput campoSenha = (HtmlPasswordInput) paginaLogin.getElementById("_PESSENHA");
-			final HtmlSubmitInput botaoConfirmar = (HtmlSubmitInput) paginaLogin.getElementByName("BUTTON1");
-
-			campoLogin.setValueAttribute(ConfiguracaoUtil.getUsuarioZeus().getLogin());
-			campoSenha.setValueAttribute(ConfiguracaoUtil.getUsuarioZeus().getSenha());
-
-			final HtmlPage paginaInicial = (HtmlPage) botaoConfirmar.click();
-
-			if (!paginaInicial.asText().contains("Principal")) {
-				webClient.close();
-				throw new IOException();
-			}
-
-			final HtmlPage paginaRegistroPonto = webClient.getPage("http://sistemas.pdcase.com/zeusprod21/HRegistroPonto2.aspx");
-			final HtmlSubmitInput botaoImprimir = (HtmlSubmitInput) paginaRegistroPonto.getElementByName("BUTTON2");
-
-			UnexpectedPage paginaRelatorio = botaoImprimir.click();
-			ConfiguracaoUtil.setUrlRelatorio(paginaRelatorio.getWebResponse().getWebRequest().getUrl().toString());
-
-			acessoSucesso = Boolean.TRUE;
-		} catch (FailingHttpStatusCodeException e) {
-			logger.error("Erro ao acessar Zeus.");
-			return Boolean.FALSE;
-		} catch (MalformedURLException e) {
-			logger.error("Erro ao acessar Zeus.");
-			return Boolean.FALSE;
-		} catch (IOException e) {
-			logger.error("Erro ao acessar Zeus.");
-			return Boolean.FALSE;
+			paginaLogin = webClient.getPage("http://sistemas.pdcase.com/zeusprod21/hacessarsistema.aspx");
+		} catch (FailingHttpStatusCodeException excecao) {
+			throw new ProjetoException("FailingHttpStatusCodeException. Erro ao acessar página de login do Zeus. " + excecao.getMessage());
+		} catch (MalformedURLException excecao) {
+			throw new ProjetoException("MalformedURLException. Erro ao acessar página de login do Zeus. " + excecao.getMessage());
+		} catch (IOException excecao) {
+			throw new ProjetoException("IOException. Erro ao acessar página de login do Zeus. " + excecao.getMessage());
 		}
 
-		webClient.close();
+		campoLogin = (HtmlTextInput) paginaLogin.getElementById("_PESLOGIN");
+		campoSenha = (HtmlPasswordInput) paginaLogin.getElementById("_PESSENHA");
+		botaoConfirmar = (HtmlSubmitInput) paginaLogin.getElementByName("BUTTON1");
 
-		return acessoSucesso;
+		campoLogin.setValueAttribute(ConfiguracaoUtil.getUsuarioZeus().getLogin());
+		campoSenha.setValueAttribute(ConfiguracaoUtil.getUsuarioZeus().getSenha());
+
+		try {
+			responsePaginaLogin = (HtmlPage) botaoConfirmar.click();
+		} catch (IOException excecao) {
+			throw new ProjetoException("IOException. Erro ao obter resposta após efetuar login no Zeus. " + excecao.getMessage());
+		}
+
+		validarLoginZeus(responsePaginaLogin);
+	}
+
+	/**
+	 * Verifica se o login no Zeus ocorreu corretamente.
+	 * @author Senio Caires
+	 * @param responsePaginaLogin
+	 * @throws ProjetoException
+	 */
+	private static void validarLoginZeus(final HtmlPage responsePaginaLogin) throws ProjetoException {
+
+		if (responsePaginaLogin.asText().contains("Usuário não cadastrado")) {
+			throw new ProjetoException("Usuário do Zeus está incorreto. Verifique o arquivo configuracao-usuario-zeus.json");
+		}
+
+		if (responsePaginaLogin.asText().contains("Senha inválida")) {
+			throw new ProjetoException("Senha do Zeus está incorreta. Verifique o arquivo configuracao-usuario-zeus.json");
+		}
 	}
 }
