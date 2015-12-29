@@ -12,6 +12,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.DefaultCredentialsProvider;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.UnexpectedPage;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -569,7 +570,18 @@ public class Run {
 	private static final Boolean acessarZeus() {
 
 		Boolean acessoSucesso = Boolean.FALSE;
-		WebClient webClient = new WebClient(BrowserVersion.CHROME);
+		WebClient webClient;
+
+		if (ConfiguracaoUtil.getConfiguracaoProxy().getAtiva()) {
+
+			webClient = new WebClient(BrowserVersion.CHROME, ConfiguracaoUtil.getConfiguracaoProxy().getHost(), Integer.valueOf(ConfiguracaoUtil.getConfiguracaoProxy().getPorta()));
+
+			final DefaultCredentialsProvider credentialsProvider = (DefaultCredentialsProvider) webClient.getCredentialsProvider();
+			credentialsProvider.addCredentials(ConfiguracaoUtil.getConfiguracaoProxy().getLogin(), ConfiguracaoUtil.getConfiguracaoProxy().getSenha());
+
+		} else {
+			webClient = new WebClient(BrowserVersion.CHROME);
+		}
 
 		try {
 
